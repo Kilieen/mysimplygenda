@@ -44,6 +44,34 @@ const weeklySchoolEvents = [
   { day: 5, start: '13:10', end: '16:00', title: 'DCO D' },
 ];
 
+// Palette de couleurs pour chaque matière afin de différencier visuellement les cours.
+const courseColors = {
+  'DCO A': '#E57373',
+  'DCO B': '#F06292',
+  'DCO C': '#BA68C8',
+  'DCO D': '#9575CD',
+  'DCO E': '#64B5F6',
+  'EPCO': '#4DB6AC',
+  'Anglais': '#7986CB',
+  'Sport': '#81C784',
+  'Dactylographie': '#FFD54F',
+  'Rattrapage / Congé': '#90A4AE',
+};
+
+// Liste des enseignants par matière (facultatif). Peut être enrichie selon les besoins.
+const courseTeachers = {
+  'DCO A': 'M. Martin',
+  'DCO B': 'Mme Dupont',
+  'DCO C': 'M. Bernard',
+  'DCO D': 'Mme Leroy',
+  'DCO E': 'M. Petit',
+  'EPCO': 'Mme Muller',
+  'Anglais': 'M. Stewart',
+  'Sport': 'Coach',
+  'Dactylographie': 'Mme Lopez',
+  'Rattrapage / Congé': '',
+};
+
 // Périodes de vacances (inclusives) basées sur le calendrier CFC 2025‑2026
 const holidayRanges = [
   { start: '2025-08-01', end: '2025-08-01' },
@@ -256,7 +284,11 @@ function renderCalendar() {
         div.className = 'event scolaire';
         div.style.top = `${top}px`;
         div.style.height = `${height}px`;
-        div.textContent = ev.title;
+        // Utiliser une couleur spécifique et afficher l’enseignant si disponible
+        const color = courseColors[ev.title] || '#3f51b5';
+        const teacher = courseTeachers[ev.title] || '';
+        div.style.backgroundColor = color;
+        div.textContent = teacher ? `${ev.title} – ${teacher}` : ev.title;
         col.appendChild(div);
       }
     });
@@ -348,7 +380,9 @@ function updateNowLine() {
         }
       }
     });
-    statusBar.textContent = `${hh}:${mm} · ${current || '—'}`;
+    // Inclure la date complète dans la barre de statut pour plus de clarté
+    const dateStr = now.toLocaleDateString('fr-CH', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
+    statusBar.textContent = `${dateStr} • ${hh}:${mm} • ${current || '—'}`;
   }
 }
 
@@ -453,6 +487,11 @@ async function initAppAfterAuth() {
   if (userName) {
     userName.textContent = `${meta.firstname || ''} ${meta.lastname || ''}`;
   }
+
+  // Afficher l’établissement si renseigné (sur la page d’accueil / bandeau)
+  if (meta.school && appTitle) {
+    appTitle.textContent += meta.school ? ` – ${meta.school}` : '';
+  }
   // Charger les événements personnels
   await loadPersonalEvents();
   // Initialiser la semaine courante
@@ -540,6 +579,15 @@ async function initAppAfterAuth() {
   }
   // Par défaut, afficher l’agenda
   activateSection('agendaMain');
+
+  // Gérer l'affichage/masquage de la barre latérale
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const appPageEl = document.getElementById('appPage');
+  if (sidebarToggle && appPageEl) {
+    sidebarToggle.onclick = () => {
+      appPageEl.classList.toggle('collapsed');
+    };
+  }
 }
 
 // Remplit la section profileMain avec les informations de l’utilisateur
@@ -548,6 +596,18 @@ function populateProfile() {
   if (!details || !supabaseUser) return;
   const meta = supabaseUser.user_metadata || {};
   details.innerHTML = '';
+  // Gérer l’affichage de la photo de profil
+  const avatarImg = document.getElementById('profileAvatar');
+  const avatarFileInput = document.getElementById('avatarFile');
+  if (avatarImg) {
+    const url = meta.avatar_url || '';
+    if (url) {
+      avatarImg.src = url;
+      avatarImg.classList.remove('hidden');
+    } else {
+      avatarImg.classList.add('hidden');
+    }
+  }
   const fields = [
     { label: 'Prénom', value: meta.firstname || '' },
     { label: 'Nom', value: meta.lastname || '' },
@@ -568,6 +628,37 @@ function populateProfile() {
   if (changePwBtn) {
     changePwBtn.onclick = () => {
       alert('Pour changer votre mot de passe, utilisez la fonction de réinitialisation de mot de passe via Supabase.');
+    };
+  }
+
+  // Gestion du changement de photo de profil
+  if (avatarFileInput) {
+    avatarFileInput.onchange = async () => {
+      const file = avatarFileInput.files && avatarFileInput.files[0];
+      if (!file) return;
+      // Générer un nom de fichier unique basé sur l’ID utilisateur et la date
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${supabaseUser.id}-${Date.now()}.${fileExt}`;
+      try {
+        // Télécharger le fichier dans le bucket avatars (à créer au préalable dans Supabase)
+        const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file, { upsert: true });
+        if (uploadError) throw uploadError;
+        // Récupérer l’URL publique du fichier
+        const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        const publicUrl = data.publicUrl;
+        // Mettre à jour les métadonnées de l’utilisateur avec l’URL de l’avatar
+        const { error: metaErr } = await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
+        if (metaErr) throw metaErr;
+        // Mettre à jour l’affichage
+        if (avatarImg) {
+          avatarImg.src = publicUrl;
+          avatarImg.classList.remove('hidden');
+        }
+        alert('Photo de profil mise à jour !');
+      } catch (err) {
+        console.error(err);
+        alert(err.message || 'Erreur lors de la mise à jour de la photo de profil.');
+      }
     };
   }
 }

@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loginPage = document.getElementById('loginPage');
   const signupPage = document.getElementById('signupPage');
   const appPage = document.getElementById('appPage');
+  const verifyEmailPage = document.getElementById('verifyEmailPage');
+  const goToLoginAfterVerifyBtn = document.getElementById('goToLoginAfterVerify');
 
   // Boutons de navigation sur la page d’accueil
   const landingLogin = document.getElementById('landingLogin');
@@ -34,6 +36,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Fonction utilitaire : afficher une seule page et cacher les autres
   function showOnly(pageElement) {
     const pages = [landingPage, loginPage, signupPage, appPage];
+    // Ajouter la page de vérification d’email dans la liste si elle existe
+    if (verifyEmailPage) pages.push(verifyEmailPage);
     pages.forEach((p) => {
       if (p === pageElement) {
         p.classList.remove('hidden');
@@ -134,6 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const lastname = document.getElementById('signupLastname').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
+      const school = document.getElementById('signupSchool').value.trim();
       const birthdate = document.getElementById('signupBirthdate').value || null;
       const address = document.getElementById('signupAddress').value.trim();
       const role = signupRole.value;
@@ -154,11 +159,23 @@ document.addEventListener('DOMContentLoaded', async () => {
               classChoice: klass,
               birthdate,
               address,
+              school,
             },
           },
         });
         if (error) throw error;
-        // Inscription réussie : afficher la page app et initialiser
+        // Si aucune session n’est renvoyée, cela signifie qu’une confirmation d’email est nécessaire.
+        // Dans ce cas, afficher la page de vérification d’email et proposer un lien vers la connexion.
+        if (!data.session) {
+          showOnly(verifyEmailPage);
+          if (goToLoginAfterVerifyBtn) {
+            goToLoginAfterVerifyBtn.onclick = () => {
+              showOnly(loginPage);
+            };
+          }
+          return;
+        }
+        // Inscription réussie et session disponible : afficher la page app et initialiser
         showOnly(appPage);
         if (typeof initAppAfterAuth === 'function') {
           await initAppAfterAuth();

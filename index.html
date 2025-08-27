@@ -58,6 +58,10 @@
           <label>Mot de passe
             <input type="password" id="signupPassword" required />
           </label>
+          <!-- Champ supplémentaire pour l'établissement / école -->
+          <label>Établissement
+            <input type="text" id="signupSchool" placeholder="Nom de l'établissement" />
+          </label>
           <label>Date de naissance
             <input type="date" id="signupBirthdate" />
           </label>
@@ -85,9 +89,20 @@
       </div>
     </div>
 
+    <!-- Page de vérification d'email -->
+    <div id="verifyEmailPage" class="page hidden">
+      <div class="form-container">
+        <h2>Vérifiez votre adresse e‑mail</h2>
+        <p>Un e‑mail de confirmation vous a été envoyé. Veuillez cliquer sur le lien pour activer votre compte puis vous reconnecter.</p>
+        <button id="goToLoginAfterVerify" class="primary">Aller à la connexion</button>
+      </div>
+    </div>
+
     <!-- Page principale de l'application -->
     <div id="appPage" class="hidden">
       <header class="app-header">
+        <!-- Bouton pour afficher/masquer la barre latérale -->
+        <button id="sidebarToggle" class="sidebar-toggle" aria-label="Ouvrir/fermer le menu">☰</button>
         <h1 id="appTitle">MySimplyGenda</h1>
       </header>
       <div class="app-container">
@@ -127,6 +142,11 @@
           <!-- Section Profil -->
           <section id="profileMain" class="page hidden">
             <h2>Mon compte</h2>
+            <!-- Zone photo de profil -->
+            <div class="profile-picture">
+              <img id="profileAvatar" src="" alt="Photo de profil" class="avatar-preview hidden" />
+              <input type="file" id="avatarFile" accept="image/*" />
+            </div>
             <div id="accountDetails"></div>
             <div class="account-actions">
               <button id="changePassword" class="primary">Changer le mot de passe</button>
