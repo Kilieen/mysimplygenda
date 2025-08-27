@@ -1,0 +1,22 @@
+{
+  "name": "Agenda scolaire & privé",
+  "short_name": "Agenda",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#1976d2",
+  "description": "Un agenda hybride pour concilier emploi du temps scolaire et rendez‑vous personnels.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,645 @@
+/* Global styles */
+/* Variables CSS globales */
+:root {
+  --slot-height: 40px;
+  --header-height: 28px;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  /* Dégradé subtil pour un look moderne */
+  background: linear-gradient(to bottom right, #f6f8fc, #e9ecf5);
+}
+
+/*
+ * Disposition générale
+ *
+ * La nouvelle version de l’application se compose de plusieurs pages (landing, login,
+ * signup, app) qui sont masquées/affichées selon l’état de l’authentification. La
+ * classe .page donne une base commune : elle occupe toute la hauteur de la
+ * fenêtre et utilise flex pour centrer son contenu. La classe .hidden cache
+ * l’élément.
+ */
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Landing page */
+.landing-container {
+  text-align: center;
+  background-color: #fff;
+  padding: 3rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  width: 100%;
+}
+.logo {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #1976d2;
+}
+.tagline {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  color: #555;
+}
+.landing-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.primary {
+  background-color: #1976d2;
+  color: #fff;
+}
+.primary:hover {
+  background-color: #125a9a;
+}
+.secondary {
+  background-color: #fff;
+  color: #1976d2;
+  border: 2px solid #1976d2;
+}
+.secondary:hover {
+  background-color: #1976d2;
+  color: #fff;
+}
+
+/* Form pages (login et signup) */
+.form-container {
+  background-color: #fff;
+  padding: 2rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  width: 100%;
+}
+.form-container h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #1976d2;
+}
+.form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.form-container label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #333;
+}
+.form-container input,
+.form-container select {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+}
+.form-container button {
+  margin-top: 1rem;
+}
+.form-container .switch {
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+.form-container .switch a {
+  color: #1976d2;
+  text-decoration: none;
+}
+.form-container .switch a:hover {
+  text-decoration: underline;
+}
+
+/* Lien de retour vers l’accueil */
+.form-container p a#backToLanding1,
+.form-container p a#backToLanding2 {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #1976d2;
+  text-decoration: none;
+}
+.form-container p a#backToLanding1:hover,
+.form-container p a#backToLanding2:hover {
+  text-decoration: underline;
+}
+
+/* Application principale */
+#appPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* En-tête de l’app */
+.app-header {
+  background-color: #1976d2;
+  color: #fff;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.app-header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+/* Conteneur app : sidebar + contenu */
+.app-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Barre latérale */
+#sidebar {
+  width: 220px;
+  background-color: #0d47a1;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 1rem 0;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+#userInfo {
+  padding: 0 1rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 1rem;
+}
+.user-class {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+.user-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+nav#sideNav {
+  display: flex;
+  flex-direction: column;
+}
+nav#sideNav button {
+  background: none;
+  border: none;
+  color: #fff;
+  text-align: left;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+nav#sideNav button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+nav#sideNav button.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Contenu principal */
+#mainContent {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation de semaine et zoom dans l’agenda */
+.nav-week {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #eee;
+  background-color: #fafafa;
+}
+
+/* Étiquette de semaine au centre */
+.nav-week #weekLabel {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Sections dans la page app */
+#agendaMain,
+#notesMain,
+#profileMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 0 0.5rem;
+}
+
+#notesMain,
+#profileMain {
+  padding: 1rem;
+}
+
+/* Status bar dans l’agenda (heures et info) */
+.status-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 0.4rem 0.8rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 0.8rem;
+  z-index: 2000;
+}
+
+/* Ajustement du calendrier pour qu’il prenne toute la hauteur disponible */
+#calendarContainer {
+  display: flex;
+  height: calc(100vh - 180px);
+  overflow-y: scroll;
+  overflow-x: auto;
+  border-top: 1px solid #ccc;
+}
+
+header {
+  background-color: #1976d2;
+  color: #fff;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Contrôles de zoom pour l'agenda */
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 1rem;
+}
+.zoom-controls button {
+  background-color: #eeeeee;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.zoom-controls button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Styles pour le modal de compte */
+.account-content {
+  width: 360px;
+  max-width: 90%;
+}
+.account-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+.account-details .label {
+  font-weight: bold;
+}
+.account-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+.account-actions button {
+  flex: 1;
+  margin-right: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background-color: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.account-actions button:last-child {
+  margin-right: 0;
+}
+.account-actions button:hover {
+  background-color: #1976d2;
+}
+
+/* Lignes pour les détails du compte */
+.account-row {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #2196f3;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #1976d2;
+}
+
+.danger {
+  background-color: #f44336;
+}
+
+.danger:hover {
+  background-color: #d32f2f;
+}
+
+main {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Calendar layout */
+#calendarContainer {
+  display: flex;
+  height: calc(100vh - 170px);
+  overflow-y: scroll;
+  overflow-x: auto;
+  border-top: 1px solid #ccc;
+}
+
+.time-column {
+  width: 50px;
+  flex-shrink: 0;
+  border-right: 1px solid #ccc;
+  position: relative;
+}
+
+.time-slot {
+  height: var(--slot-height);
+  border-bottom: 1px solid #eee;
+  font-size: 0.7rem;
+  color: #666;
+  text-align: right;
+  padding: 2px 4px 0 0;
+  box-sizing: border-box;
+}
+
+.day-column {
+  flex: 1;
+  min-width: 160px;
+  border-right: 1px solid #ccc;
+  position: relative;
+  background-color: #fff;
+}
+
+.day-column:last-child {
+  border-right: none;
+}
+
+.day-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: #fafafa;
+  border-bottom: 1px solid #ccc;
+  padding: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.day-column.holiday {
+  background-color: #e0f7fa;
+}
+
+.day-column.today {
+  background-color: #e3f2fd;
+}
+
+.day-column.today .day-header {
+  background-color: #bbdefb;
+  color: #0d47a1;
+}
+
+.day-column.exam {
+  background-color: #fff3e0;
+}
+
+.event {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.7rem;
+  overflow: hidden;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.event.personnel {
+  background-color: #e91e63;
+}
+
+.event.scolaire {
+  background-color: #3f51b5;
+}
+
+/* Style pour les événements d'examen */
+.event.examen {
+  background-color: #f8b400;
+  color: #000;
+}
+
+/* Style pour les jours d'examen (colonnes) */
+.day-column.exam {
+  background-color: #fff8e1;
+}
+
+/* Ligne indiquant l’heure actuelle */
+.now-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ff5722;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Bouton flottant pour ajouter un rendez-vous */
+#fabAdd {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background-color: #1976d2;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 2000;
+}
+#fabAdd:hover {
+  background-color: #0d47a1;
+}
+
+.event.conflict {
+  background-color: #f44336;
+}
+
+/* Barre de connexion (sélection d'utilisateur) */
+.login-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-bar input {
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.login-bar .login-label {
+  margin-right: 0.5rem;
+}
+
+/* Barre d’état en bas à gauche */
+.status-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 0.4rem 0.8rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 0.9rem;
+  z-index: 2000;
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  max-width: 90%;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-content input,
+.modal-content select {
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Notes table (page Notes) */
+.notes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.notes-table th,
+.notes-table td {
+  border: 1px solid #ccc;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem;
+}
+.notes-table th {
+  background-color: #f5f5f5;
+  text-align: left;
+}
+.notes-table input {
+  width: 60px;
+  padding: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}

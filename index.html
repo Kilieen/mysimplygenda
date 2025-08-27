@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1976d2" />
+    <link rel="manifest" href="manifest.json" />
+    <title>Agenda scolaire & privé</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+    <!-- Configuration (à compléter avec votre URL et clé anonyme Supabase) -->
+    <script src="config.js"></script>
+  </head>
+  <body>
+    <!-- Page d'accueil (landing) -->
+    <div id="landingPage" class="page">
+      <div class="landing-container">
+        <h1 class="logo">MySimplyGenda</h1>
+        <p class="tagline">Votre agenda personnel et scolaire</p>
+        <div class="landing-actions">
+          <button id="landingLogin" class="primary">Se connecter</button>
+          <button id="landingSignup" class="secondary">Créer un compte</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page de connexion -->
+    <div id="loginPage" class="page hidden">
+      <div class="form-container">
+        <h2>Se connecter</h2>
+        <form id="loginForm">
+          <label>
+            E‑mail
+            <input type="email" id="loginEmail" required />
+          </label>
+          <label>
+            Mot de passe
+            <input type="password" id="loginPassword" required />
+          </label>
+          <button type="submit" class="primary">Se connecter</button>
+        </form>
+        <p class="switch">Pas de compte ? <a href="#" id="linkToSignup">Créer un compte</a></p>
+        <p><a href="#" id="backToLanding1">← Retour</a></p>
+      </div>
+    </div>
+
+    <!-- Page de création de compte -->
+    <div id="signupPage" class="page hidden">
+      <div class="form-container">
+        <h2>Créer un compte</h2>
+        <form id="signupForm">
+          <label>Prénom
+            <input type="text" id="signupFirstname" required />
+          </label>
+          <label>Nom
+            <input type="text" id="signupLastname" required />
+          </label>
+          <label>E‑mail
+            <input type="email" id="signupEmail" required />
+          </label>
+          <label>Mot de passe
+            <input type="password" id="signupPassword" required />
+          </label>
+          <label>Date de naissance
+            <input type="date" id="signupBirthdate" />
+          </label>
+          <label>Adresse postale
+            <input type="text" id="signupAddress" />
+          </label>
+          <label>Rôle
+            <select id="signupRole">
+              <option value="student">Étudiant·e</option>
+              <option value="private">Privé</option>
+            </select>
+          </label>
+          <div id="classSelector" class="hidden">
+            <label>Classe (si étudiant)
+              <select id="signupClass">
+                <option value="CFC1">CFC1</option>
+                <option value="custom">Ajouter soi‑même les horaires</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit" class="primary">Créer le compte</button>
+        </form>
+        <p class="switch">Déjà un compte ? <a href="#" id="linkToLogin">Se connecter</a></p>
+        <p><a href="#" id="backToLanding2">← Retour</a></p>
+      </div>
+    </div>
+
+    <!-- Page principale de l'application -->
+    <div id="appPage" class="hidden">
+      <header class="app-header">
+        <h1 id="appTitle">MySimplyGenda</h1>
+      </header>
+      <div class="app-container">
+        <aside id="sidebar">
+          <div id="userInfo">
+            <div id="userClass" class="user-class"></div>
+            <div id="userName" class="user-name"></div>
+          </div>
+          <nav id="sideNav">
+            <button class="sidebar-link" data-target="agendaMain">Agenda</button>
+            <button class="sidebar-link" data-target="notesMain" id="sideNotes">Notes</button>
+            <button class="sidebar-link" data-target="profileMain">Mon compte</button>
+            <button class="sidebar-link" id="sideLogout">Se déconnecter</button>
+          </nav>
+        </aside>
+        <main id="mainContent">
+          <!-- Section Agenda -->
+          <section id="agendaMain" class="page">
+            <div class="nav-week">
+              <button id="prevWeek">◀ Semaine précédente</button>
+              <span id="weekLabel"></span>
+              <button id="nextWeek">Semaine suivante ▶</button>
+              <div class="zoom-controls">
+                <button id="zoomOut">−</button>
+                <button id="zoomIn">＋</button>
+              </div>
+            </div>
+            <div id="calendarContainer"></div>
+            <div id="statusBar" class="status-bar">--:-- · —</div>
+            <button id="fabAdd" title="Ajouter un rendez-vous">＋</button>
+          </section>
+          <!-- Section Notes -->
+          <section id="notesMain" class="page hidden">
+            <h2>Notes</h2>
+            <div id="notesContainer"></div>
+          </section>
+          <!-- Section Profil -->
+          <section id="profileMain" class="page hidden">
+            <h2>Mon compte</h2>
+            <div id="accountDetails"></div>
+            <div class="account-actions">
+              <button id="changePassword" class="primary">Changer le mot de passe</button>
+            </div>
+          </section>
+          <!-- Modale d'événement (réutilisée) -->
+          <div id="eventModal" class="modal hidden">
+            <div class="modal-content">
+              <h2 id="modalTitle">Nouvel événement</h2>
+              <form id="eventForm">
+                <label>Titre
+                  <input type="text" id="eventTitle" required />
+                </label>
+                <label>Début
+                  <input type="datetime-local" id="eventStart" required />
+                </label>
+                <label>Fin
+                  <input type="datetime-local" id="eventEnd" required />
+                </label>
+                <label>Couleur
+                  <input type="color" id="eventColor" value="#3f51b5" />
+                </label>
+                <label>Rappel (minutes avant)
+                  <input type="number" id="eventReminder" min="0" max="10080" step="1" />
+                </label>
+                <label>Type
+                  <select id="eventType">
+                    <option value="personnel">Personnel</option>
+                    <option value="scolaire">Scolaire</option>
+                  </select>
+                </label>
+                <div class="modal-actions">
+                  <button type="submit" id="saveEvent" class="primary">Enregistrer</button>
+                  <button type="button" id="deleteEvent" class="danger hidden">Supprimer</button>
+                  <button type="button" id="cancelEvent">Annuler</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Charger les scripts de l’application. L’ordre est important :
+         1. app.js définit les fonctions globales (ex : initAppAfterAuth).
+         2. auth.js gère la navigation entre pages et l’authentification.
+         3. notes.js gère la page Notes (chargée à la demande).
+    -->
+    <script src="app.js"></script>
+    <script src="auth.js"></script>
+    <script src="notes.js"></script>
+  </body>
+</html>
