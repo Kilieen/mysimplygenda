@@ -161,6 +161,31 @@ body {
   font-size: 1.4rem;
 }
 
+/* Bouton pour afficher/masquer la barre latérale */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+/* Lorsque l'app est en mode "sidebar collapsed", masquer la barre latérale */
+#appPage.collapsed #sidebar {
+  transform: translateX(-100%);
+}
+
+/* Appliquer une transition pour un glissement fluide */
+#sidebar {
+  transition: transform 0.3s ease;
+}
+
+/* Ajuster le contenu principal lorsqu'on masque la barre latérale */
+#appPage.collapsed #mainContent {
+  margin-left: 0;
+}
+
 /* Conteneur app : sidebar + contenu */
 .app-container {
   flex: 1;
@@ -307,22 +332,12 @@ header h1 {
 
 /* Contrôles de zoom pour l'agenda */
 .zoom-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin-left: 1rem;
+  /* Masquer les contrôles de zoom pour ne pas encombrer l’interface */
+  display: none;
 }
+/* Les boutons de zoom ne sont plus nécessaires */
 .zoom-controls button {
-  background-color: #eeeeee;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0.2rem 0.5rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-.zoom-controls button:hover {
-  background-color: #e0e0e0;
+  display: none;
 }
 
 /* Styles pour le modal de compte */
@@ -367,6 +382,47 @@ header h1 {
   margin-bottom: 0.4rem;
   font-size: 0.95rem;
   color: #333;
+}
+
+/* Table des notes */
+.notes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.notes-table th,
+.notes-table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: left;
+}
+.notes-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+.notes-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Zone photo de profil */
+.profile-picture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.avatar-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+/* Bouton dans la table de notes */
+.notes-table button.primary {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.8rem;
 }
 
 button {

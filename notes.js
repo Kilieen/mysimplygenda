@@ -6,7 +6,11 @@ function getSubjects() {
   const set = new Set();
   // weeklySchoolEvents est défini dans app.js
   weeklySchoolEvents.forEach(ev => {
-    set.add(ev.title);
+    // Exclure les intitulés qui ne correspondent pas à une matière
+    const skip = ['Rattrapage / Congé', 'Rattrapage', 'Congé', 'Test', 'Examens'];
+    if (!skip.some(s => ev.title.toLowerCase().includes(s.toLowerCase()))) {
+      set.add(ev.title);
+    }
   });
   return Array.from(set).sort();
 }
@@ -29,7 +33,8 @@ async function renderNotes() {
   }
   // Récupérer les sujets et les notes de la base
   const subjects = getSubjects();
-  let notesMap = {};
+  // Charger toutes les notes depuis la base et les grouper par matière
+  const notesBySubject = {};
   try {
     const { data, error } = await supabase
       .from('notes')
@@ -37,17 +42,20 @@ async function renderNotes() {
       .eq('user_id', supabaseUser.id);
     if (error) throw error;
     data.forEach(row => {
-      notesMap[row.subject] = row.grade;
+      if (!notesBySubject[row.subject]) {
+        notesBySubject[row.subject] = [];
+      }
+      notesBySubject[row.subject].push(row.grade);
     });
   } catch (err) {
     console.warn('Erreur de chargement des notes:', err);
   }
-  // Créer un formulaire/tableau pour saisir les notes
+  // Créer un tableau pour afficher les notes et leurs moyennes
   const table = document.createElement('table');
   table.className = 'notes-table';
   const thead = document.createElement('thead');
   const hr = document.createElement('tr');
-  ['Matière', 'Note (0–6)'].forEach(txt => {
+  ['Matière', 'Notes', 'Ajouter une note', 'Moyenne'].forEach(txt => {
     const th = document.createElement('th');
     th.textContent = txt;
     hr.appendChild(th);
@@ -57,37 +65,50 @@ async function renderNotes() {
   const tbody = document.createElement('tbody');
   subjects.forEach(subject => {
     const tr = document.createElement('tr');
+    // Colonne matière
     const tdSubject = document.createElement('td');
     tdSubject.textContent = subject;
-    const tdInput = document.createElement('td');
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.min = '0';
-    input.max = '6';
-    input.step = '0.5';
-    input.value = notesMap[subject] != null ? notesMap[subject] : '';
-    input.dataset.subject = subject;
-    input.addEventListener('change', async () => {
-      let val = parseFloat(input.value);
+    tr.appendChild(tdSubject);
+    // Colonne notes listées
+    const tdNotes = document.createElement('td');
+    const grades = notesBySubject[subject] || [];
+    tdNotes.textContent = grades.length ? grades.join(', ') : '—';
+    tr.appendChild(tdNotes);
+    // Colonne bouton ajouter
+    const tdAdd = document.createElement('td');
+    const addBtn = document.createElement('button');
+    addBtn.textContent = 'Ajouter';
+    addBtn.className = 'primary';
+    addBtn.addEventListener('click', async () => {
+      const inputVal = prompt(`Ajouter une note pour ${subject} (0–6) :`);
+      if (inputVal === null) return;
+      const val = parseFloat(inputVal);
       if (isNaN(val) || val < 0 || val > 6) {
         alert('Veuillez saisir une note entre 0 et 6.');
-        input.value = notesMap[subject] || '';
         return;
       }
       try {
-        const { error } = await supabase.from('notes').upsert(
-          { user_id: supabaseUser.id, subject: subject, grade: val },
-          { onConflict: ['user_id', 'subject'] }
-        );
+        const { error } = await supabase.from('notes').insert({
+          user_id: supabaseUser.id,
+          subject: subject,
+          grade: val,
+        });
         if (error) throw error;
-        notesMap[subject] = val;
+        // Recharger l’affichage des notes après insertion
+        renderNotes();
       } catch (err) {
         alert(err.message || 'Erreur lors de la sauvegarde de la note.');
       }
     });
-    tdInput.appendChild(input);
-    tr.appendChild(tdSubject);
-    tr.appendChild(tdInput);
+    tdAdd.appendChild(addBtn);
+    tr.appendChild(tdAdd);
+    // Colonne moyenne
+    const tdAvg = document.createElement('td');
+    const avg = grades.length
+      ? (grades.reduce((sum, g) => sum + g, 0) / grades.length).toFixed(2)
+      : '—';
+    tdAvg.textContent = avg;
+    tr.appendChild(tdAvg);
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
